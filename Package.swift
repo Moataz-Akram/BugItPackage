@@ -16,7 +16,8 @@ let package = Package(
             targets: ["BugItPackage"]),
     ],
     dependencies: [
-        .package(name: "GoogleSignIn",url: "https://github.com/google/GoogleSignIn-iOS",  .upToNextMajor(from: "8.0.0")),
+        .package(name: "GoogleSignIn", url: "https://github.com/google/GoogleSignIn-iOS",  .upToNextMajor(from: "7.0.0")),
+        .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk.git", .upToNextMajor(from: "10.29.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -27,6 +28,9 @@ let package = Package(
             [
                 .product(name: "GoogleSignIn", package: "GoogleSignIn"),
                 .product(name: "GoogleSignInSwift", package: "GoogleSignIn"),
+                .product(name: "FirebaseStorage", package: "Firebase"),
+                .product(name: "FirebaseFirestoreSwift", package: "Firebase"),
+                
             ]
         ),
         .testTarget(
