@@ -27,7 +27,7 @@ final public class BugItManager: ObservableObject {
         do {
             let url = try await uploadImage(image: bug.image)
             bugInfo.imageURL = url
-            try await networkService.uploadBug(bugInfo)
+            try await networkService.uploadBug(bugInfo, date: Date.getCurrentDate())
         }
     }
     

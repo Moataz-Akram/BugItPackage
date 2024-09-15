@@ -26,7 +26,7 @@ class GoogleSignInManager {
         
         GIDSignIn.sharedInstance.signIn(withPresenting: viewController, hint: nil, additionalScopes: scopes) { signInResult, error in
             if let error {
-                //TODO: handle error
+                print(error)
                 return
             }
             // Access token needed for APIs
@@ -35,4 +35,7 @@ class GoogleSignInManager {
             print("token: \(token)")
         }
     }
+    
+    func shouldShowLogin() -> Bool {
+        // Check if we have a stored user
 }
