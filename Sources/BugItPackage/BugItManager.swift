@@ -13,7 +13,7 @@ import FirebaseStorage
 final public class BugItManager: ObservableObject {
     public static let shared = BugItManager()
     // Google sheets specific
-    @Published public var shouldShowLogin: Bool = false
+    @Published public var shouldShowLogin: Bool = true
     private let networkService: NetworkServiceProtocol
     
     // Can work with any other network service if implemented
@@ -93,8 +93,4 @@ final public class BugItManager: ObservableObject {
         return imageData
     }
 
-    //MARK: Google sheets specific
-    public func checkLoginStatus() {
-        shouldShowLogin = GoogleSignInManager.shared.shouldShowLogin()
-    }
 }
