@@ -9,7 +9,7 @@ import Foundation
 import GoogleSignIn
 
 protocol NetworkServiceProtocol {
-    func addBug(_ bug: Bug)
+    func uploadBug(_ bug: Bug) async throws
 }
 
 final class GoogleSheetsNetworkService: NetworkServiceProtocol {
@@ -25,12 +25,12 @@ final class GoogleSheetsNetworkService: NetworkServiceProtocol {
         self.tabId = tabId
     }
     
-    func addBug(_ bug: Bug) {
+    func uploadBug(_ bug: Bug) async throws {
         let urlString = "\(baseURL)\(sheetId)/values/\(tabId):append"
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
-            return
+            throw URLError(.badURL)
         }
+        
         var request = prepareRequest(url: url)
         
         // Bug Info
@@ -41,37 +41,32 @@ final class GoogleSheetsNetworkService: NetworkServiceProtocol {
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: body)
         } catch {
-            print("Error serializing JSON: \(error)")
-            return
+            throw NSError(domain: "UploadBugErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "Error serializing JSON: \(error.localizedDescription)"])
         }
         
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("Error making API call: \(error)")
-                return
-            }
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse {
                 print("Status Code: \(httpResponse.statusCode)")
                 
-                if let data = data {
-                    if httpResponse.statusCode == 200 {
-                        do {
-                            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                                print("Response: \(json)")
-                            }
-                        } catch {
-                            print("Error parsing JSON: \(error)")
+                if httpResponse.statusCode == 200 {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                            print("Response: \(json)")
                         }
-                    } else {
-                        if let errorMessage = String(data: data, encoding: .utf8) {
-                            print("Error message: \(errorMessage)")
-                        }
+                    } catch {
+                        throw NSError(domain: "UploadBugErrorDomain", code: 2, userInfo: [NSLocalizedDescriptionKey: "Error parsing JSON: \(error.localizedDescription)"])
+                    }
+                } else {
+                    if let errorMessage = String(data: data, encoding: .utf8) {
+                        throw NSError(domain: "UploadBugErrorDomain", code: 3, userInfo: [NSLocalizedDescriptionKey: "Error message: \(errorMessage)"])
                     }
                 }
             }
+        } catch {
+            throw NSError(domain: "UploadBugErrorDomain", code: 4, userInfo: [NSLocalizedDescriptionKey: "Error making API call: \(error.localizedDescription)"])
         }
-        task.resume()
 
     }
     
