@@ -16,10 +16,12 @@ public struct LoginButtonView: View {
     let rootVC = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.rootViewController ?? UIViewController()
 
     public var body: some View {
-
-        GoogleSignInButton {
-            GoogleSignInManager.shared.signIn(presenting: rootVC)
-        }
+            GoogleSignInButton {
+                GoogleSignInManager.shared.signIn(presenting: rootVC)
+            }
+            .cornerRadius(10)
+            .shadow(radius: 5)
+            .frame(width: 150)
     }
 }
 
