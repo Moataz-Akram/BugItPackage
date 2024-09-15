@@ -38,4 +38,13 @@ class GoogleSignInManager {
     
     func shouldShowLogin() -> Bool {
         // Check if we have a stored user
+        if let currentUser = GIDSignIn.sharedInstance.currentUser {
+            // Check if the access token is expired
+            if let expirationDate = currentUser.accessToken.expirationDate, expirationDate > Date() {
+                // Token is still valid
+                return false
+            }
+        }
+        return true
+    }
 }
